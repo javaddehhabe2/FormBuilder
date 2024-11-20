@@ -1,3 +1,9 @@
+# After clone project 
+
+### 1.run `npm i` to add plugin and create node_modules folder
+### 2 run `npm start` to run project
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
