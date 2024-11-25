@@ -1,0 +1,174 @@
+sr
+// import React, { useMemo, useState, useEffect, useCallback } from "react";
+
+// import { JsonProp} from "./FormType";
+
+// export const Form: React.FunctionComponent<JsonProp> = ({
+//   Prop,
+//   headerIndex,
+//   setJsonData,
+//   jsonData
+// }) => {
+//   const [selectedColumn, setSelectedColumn] = useState(Prop);
+
+//   const changeInput = useCallback(
+//     (key: string, val: string) => {
+//       console.log(key, val);
+//       if (key == "columnID"){
+//         setSelectedColumn((prev) => {
+//           let p = prev;
+//           if (p) p.ColumnType = Number(val);
+//           return p;
+//         });
+//        if(headerIndex && jsonData ) setJsonData((prev)=>{
+        
+//           prev?.columns[headerIndex].
+//         })
+//       }
+//       // if (key == "headerName")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.headerName = val;
+//       //     return p;
+//       //   });
+//       // if (key == "title")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.title = val;
+//       //     return p;
+//       //   });
+//       // if (key == "field"){
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.field = val;
+//       //     console.log(p);
+//       //     return p;
+//       //   });
+//       //  if(Prop) Prop.field=val;
+//       // }
+//       // if (key == "align")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.align = val;
+//       //     return p;
+//       //   });
+//       // if (key == "sortable")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.sortable = val.toLowerCase() === "true" ? true : false;
+//       //     return p;
+//       //   });
+//       // if (key == "IsVisible")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.IsVisible = val.toLowerCase() === "true" ? true : false;
+//       //     return p;
+//       //   });
+//       // if (key == "TrueText")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.TrueText = val;
+//       //     return p;
+//       //   });
+//       // if (key == "FalseText")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.FalseText = val;
+//       //     return p;
+//       //   });
+//       // if (key == "width")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.width = Number(val);
+//       //     return p;
+//       //   });
+
+//       // if (key == "deltaWidth")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.deltaWidth = Number(val);
+//       //     return p;
+//       //   });
+
+//       // if (key == "boxWidth")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.boxWidth = Number(val);
+//       //     return p;
+//       //   });
+
+//       // if (key == "cellClass")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.cellClass = val;
+//       //     return p;
+//       //   });
+
+//       // if (key == "OrderId")
+//       //   setSelectedColumn((prev) => {
+//       //     let p = prev;
+//       //     if (p) p.OrderId = Number(val);
+//       //     return p;
+//       //   });
+//     },
+//     [setSelectedColumn,Prop,selectedColumn, headerIndex]
+//   );
+
+//   useEffect(() => {
+//     setSelectedColumn(Prop);
+//     console.log(Prop);
+//   }, [Prop]);
+//   useEffect(() => {
+//     console.log(selectedColumn);
+//   }, [selectedColumn]);
+
+//   return (
+//     <>
+//       {selectedColumn
+//         ? Object.entries(selectedColumn).map(([key, value]) => {
+//             console.log(key);
+//             console.log(value);
+//             return (
+//               <div className="w-full  px-3 mb-6 md:mb-0 flex gap-3">
+//                 {["false", "true"].includes(value.toString()) ? (
+//                   <>
+//                     <label
+//                       className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+//                       htmlFor="grid-label"
+//                     >
+//                       {key.toString()}
+//                     </label>
+//                     <input
+//                       type="checkbox"
+//                       name={value.toString() ? value.toString() : ""}
+//                       id={key.toString()}
+//                       value={value.toString() ? value.toString() : ""}
+//                       checked={value ? value : false}
+//                     />
+//                   </>
+//                 ) : (
+//                   <>
+//                     <label
+//                       className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+//                       htmlFor="grid-label"
+//                     >
+//                       {key.toString()}
+//                     </label>
+//                     <input
+//                       className=" "
+//                       type="text"
+//                       onChange={(e) => changeInput(key, e.currentTarget.value)}
+//                       name={value.toString() ? value.toString() : ""}
+//                       id={key.toString()}
+//                       value={value.toString() ? value.toString() : ""}
+//                     />
+//                   </>
+//                 )}
+//               </div>
+//             );
+//           })
+//         : 
+//           null}
+//     </>
+//   );
+// };

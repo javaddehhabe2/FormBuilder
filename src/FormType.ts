@@ -32,24 +32,7 @@ export interface InputType {
   IsSerialChanges?: boolean;
   buttons?: [];
   HelpButtons?: [];
-  columns: {
-    columnID?: number;
-    headerName?: string;
-    title?: string;
-    field?: string;
-    ColumnType?: number;
-    align?: string;
-    sortable?: boolean;
-    IsVisible?: boolean;
-    TrueText?: string;
-    FalseText?: string;
-    width?: number;
-    Editor?: {};
-    deltaWidth?: number;
-    boxWidth?: number;
-    cellClass?: string;
-    OrderId?: number;
-  }[];
+  columns: column[];
 
   PagerLookups?: [];
   Serial?: {
@@ -71,8 +54,43 @@ export interface InputType {
   };
   showFooter?: boolean;
 }
+export type columnKey =
+  | "columnID"
+  | "headerName"
+  | "title"
+  | "field"
+  | "ColumnType"
+  | "align"
+  | "sortable"
+  | "IsVisible"
+  | "TrueText"
+  | "FalseText"
+  | "width"
+  | "deltaWidth"
+  | "boxWidth"
+  | "cellClass"
+  | "OrderId";
+export interface column {
+  columnID?: number;
+  headerName?: string;
+  title?: string;
+  field?: string;
+  ColumnType?: number;
+  align?: string;
+  sortable?: boolean;
+  IsVisible?: boolean;
+  TrueText?: string;
+  FalseText?: string;
+  width?: number;
+  deltaWidth?: number;
+  boxWidth?: number;
+  cellClass?: string;
+  OrderId?: number;
+}
+
 export interface JsonProp {
-  Prop?: InputType[];
-  setJsonData?: React.Dispatch<React.SetStateAction<InputType[] | undefined>>;
-  seteditJsonData?: React.Dispatch<React.SetStateAction<InputType | undefined>>;
+  Prop?: column;
+  headerIndex?: number;
+  setJsonData?: React.Dispatch<React.SetStateAction<InputType | undefined>>;
+  jsonData?:InputType | undefined;
 }
