@@ -19,19 +19,32 @@ function App() {
   const [selectedColumn, setSelectedColumn] = useState<column>();
 
   const [selectedGrid, setSelectedGrid] = useState<
-    { title: string } | undefined
+    | {
+        title: string;
+        pagination: string;
+        singleSelect: string;
+        dragableColumn: string;
+        EnableInsert: string;
+        showFooter: string;
+      }
+    | undefined
   >();
 
   const [rowData, setRowData] = useState([]);
 
   const [columnDefs, setColumnDefs] = useState<ColDef[]>();
 
+  const StringToBoolean = useCallback((str: string) => {
+    return str
+      ? str.toString().toLowerCase() === "true"
+        ? true
+        : false
+      : false;
+  }, []);
   useEffect(() => {
     if (jsonData) {
       if (jsonData?.columns) {
         jsonData.columns.forEach((col) => (col.headerName = col.title));
-        // jsonData.columns.forEach((col) => (col.sortable = false));
-
         jsonData?.columns
           ? setColumnDefs(
               [...jsonData.columns].map((object) => ({
@@ -64,7 +77,24 @@ function App() {
 
   const gridClick = useCallback(() => {
     if (jsonData) {
-      setSelectedGrid({ title: jsonData.title ? jsonData.title : "" });
+      setSelectedGrid({
+        title: jsonData.title ? jsonData.title : "",
+        pagination: jsonData.pagination
+          ? jsonData.pagination.toString()
+          : "false",
+        singleSelect: jsonData.singleSelect
+          ? jsonData.singleSelect.toString()
+          : "false",
+        dragableColumn: jsonData.dragableColumn
+          ? jsonData.dragableColumn.toString()
+          : "false",
+        EnableInsert: jsonData.EnableInsert
+          ? jsonData.EnableInsert.toString()
+          : "false",
+        showFooter: jsonData.showFooter
+          ? jsonData.showFooter.toString()
+          : "false",
+      });
 
       setSelectedColumn(undefined);
       setSelectedIndex(undefined);
@@ -79,9 +109,31 @@ function App() {
   }, [selectedColumn]);
 
   useEffect(() => {
-    let pp = { ...jsonData };
-    if (pp?.title) pp.title = selectedGrid?.title;
-    setJsonData(pp as InputType);
+    if (selectedGrid) {
+      let pp = { ...jsonData };
+      pp?.title
+        ? (pp.title = selectedGrid?.title)
+        : (pp["title"] = selectedGrid?.title);
+      pp?.pagination
+        ? (pp.pagination = StringToBoolean(selectedGrid.pagination))
+        : (pp["pagination"] = StringToBoolean(selectedGrid.pagination));
+      pp?.singleSelect
+        ? (pp.singleSelect = StringToBoolean(selectedGrid?.singleSelect))
+        : (pp["singleSelect"] = StringToBoolean(selectedGrid?.singleSelect));
+      pp?.dragableColumn
+        ? (pp.dragableColumn = StringToBoolean(selectedGrid?.dragableColumn))
+        : (pp["dragableColumn"] = StringToBoolean(
+            selectedGrid?.dragableColumn
+          ));
+      pp?.EnableInsert
+        ? (pp.EnableInsert = StringToBoolean(selectedGrid?.EnableInsert))
+        : (pp["EnableInsert"] = StringToBoolean(selectedGrid?.EnableInsert));
+      pp?.showFooter
+        ? (pp.showFooter = StringToBoolean(selectedGrid?.showFooter))
+        : (pp["showFooter"] = StringToBoolean(selectedGrid?.showFooter));
+
+      setJsonData(pp as InputType);
+    }
   }, [selectedGrid]);
 
   const changeInput = (key: string, val: string) => {
@@ -106,10 +158,10 @@ function App() {
         if (p) p.align = val;
         break;
       case "sortable":
-        if (p) p.sortable = val.toLowerCase() === "true" ? false : true;
+        if (p) p.sortable = StringToBoolean(val) ? false : true;
         break;
       case "IsVisible":
-        if (p) p.IsVisible = val.toLowerCase() === "true" ? false : true;
+        if (p) p.IsVisible = StringToBoolean(val) ? false : true;
         break;
       case "width":
         if (p) p.width = Number(val);
@@ -136,127 +188,208 @@ function App() {
 
     setSelectedColumn(p);
   };
-  const changeInputGrid = (val: string) => {
-    let p = selectedGrid?.title ? { title: selectedGrid.title } : undefined;
-    p?.title ? (p.title = val ? val : "") : console.log(2);
-    if (p) setSelectedGrid(p);
+
+  const changeInputGrid = (key: string, val: string) => {
+    let p = { ...selectedGrid };
+    switch (key) {
+      case "title":
+        if (p) p.title = val;
+        break;
+      case "pagination":
+        if (p) p.pagination = StringToBoolean(val) ? "false" : "true";
+        break;
+      case "singleSelect":
+        if (p) p.singleSelect = StringToBoolean(val) ? "false" : "true";
+        break;
+      case "dragableColumn":
+        if (p) p.dragableColumn = StringToBoolean(val) ? "false" : "true";
+        break;
+      case "EnableInsert":
+        if (p) p.EnableInsert = StringToBoolean(val) ? "false" : "true";
+        break;
+      case "showFooter":
+        if (p) p.showFooter = StringToBoolean(val) ? "false" : "true";
+        break;
+    }
+
+    setSelectedGrid({
+      title: p.title ? p.title : "",
+      pagination: p.pagination ? p.pagination : "false",
+      singleSelect: p.singleSelect ? p.singleSelect : "false",
+      dragableColumn: p.dragableColumn ? p.dragableColumn : "false",
+      EnableInsert: p.EnableInsert ? p.EnableInsert : "false",
+      showFooter: p.showFooter ? p.showFooter : "false",
+    });
   };
+
+  const onChangeTXT = useCallback(
+    (val: string) => {
+      try {
+        let jj =
+          JSON.parse(val)?.Entity !== undefined
+            ? {
+                ...JSON.parse(val)?.Entity,
+              }
+            : JSON.parse(val) !== undefined
+            ? {
+                ...JSON.parse(val),
+              }
+            : null;
+
+        if (jj) {
+          setJsonData(jj);
+          if (selectedGrid) {
+            setSelectedGrid({
+              title: jj.title ? jj.title : "",
+              pagination: jj.pagination ? jj.pagination : "false",
+              singleSelect: jj.singleSelect ? jj.singleSelect : "false",
+              dragableColumn: jj.dragableColumn ? jj.dragableColumn : "false",
+              EnableInsert: jj.EnableInsert ? jj.EnableInsert : "false",
+              showFooter: jj.showFooter ? jj.showFooter : "false",
+            });
+          } else if (selectedColumn) {
+            if (jj?.columns && selectedIndex !== undefined && selectedColumn)
+              setSelectedColumn(jj.columns[selectedIndex]);
+          }
+        }
+      } catch (ex) {
+        console.log(ex);
+      }
+    },
+    [selectedGrid, selectedColumn, selectedIndex]
+  );
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row pt-5">
       <div>
         {selectedColumn ? (
-          Object.entries(selectedColumn).map(([key, value]) => {
-            return (
-              <div key={key} className="w-full  px-3 mb-6 md:mb-0 flex gap-3">
-                {["false", "true"].includes(value.toString()) ? (
-                  <>
-                    <label
-                      className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                      htmlFor="grid-label"
-                    >
-                      {key.toString()}
-                    </label>
-                    <input
-                      type="checkbox"
-                      name={value.toString() ? value.toString() : ""}
-                      id={key.toString()}
-                      value={value.toString() ? value.toString() : ""}
-                      checked={value ? value : false}
-                      onChange={(e) => changeInput(key, e.currentTarget.value)}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <label
-                      className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                      htmlFor="grid-label"
-                    >
-                      {key.toString()}
-                    </label>
-                    <input
-                      className="border-2"
-                      type="text"
-                      onChange={(e) => changeInput(key, e.currentTarget.value)}
-                      name={value.toString() ? value.toString() : ""}
-                      id={key.toString()}
-                      value={value.toString() ? value.toString() : ""}
-                    />
-                  </>
-                )}
-              </div>
-            );
-          })
+          <table className="w-full text-left table-auto min-w-max">
+            <tbody>
+              {Object.entries(selectedColumn).map(([key, value]) => {
+                return (
+                  <tr className="h-9">
+                    {["false", "true"].includes(value.toString()) ? (
+                      <>
+                        <td className="p-4 border border-blue-gray-50">
+                          <label
+                            className="text-gray-700 text-xs font-bold"
+                            htmlFor="grid-label"
+                          >
+                            {key.toString()}
+                          </label>
+                        </td>
+                        <td className="p-4 border border-blue-gray-50  font-bold">
+                          <input
+                            type="checkbox"
+                            name={value.toString() ? value.toString() : ""}
+                            id={key.toString()}
+                            value={value.toString() ? value.toString() : ""}
+                            checked={value ? value : false}
+                            onChange={(e) =>
+                              changeInput(key, e.currentTarget.value)
+                            }
+                          />
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="p-2 border border-blue-gray-50">
+                          <label
+                            className=" text-gray-700 text-xs font-bold"
+                            htmlFor="grid-label"
+                          >
+                            {key.toString()}
+                          </label>
+                        </td>
+                        <td className="border border-blue-gray-50">
+                          <input
+                            className=""
+                            type="text"
+                            onChange={(e) =>
+                              changeInput(key, e.currentTarget.value)
+                            }
+                            name={value.toString() ? value.toString() : ""}
+                            id={key.toString()}
+                            value={value.toString() ? value.toString() : ""}
+                          />
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         ) : selectedGrid ? (
-          <div className="w-full  px-3 mb-6 md:mb-0 flex gap-3">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              htmlFor="grid-label"
-            >
-              title
-            </label>
-            <input
-              className="border-2"
-              type="text"
-              onChange={(e) => changeInputGrid(e.currentTarget.value)}
-              name={
-                selectedGrid.title.toString()
-                  ? selectedGrid.title.toString()
-                  : ""
-              }
-              value={
-                selectedGrid.title.toString()
-                  ? selectedGrid.title.toString()
-                  : ""
-              }
-            />
-          </div>
+          <table className="w-full text-left table-auto min-w-max">
+            <tbody>
+              {Object.entries(selectedGrid).map(([key, value]) => {
+                return (
+                  <tr className="h-9">
+                    {["false", "true"].includes(value.toString()) ? (
+                      <>
+                        <td className="p-4 border border-blue-gray-50">
+                          <label
+                            className="text-gray-700 text-xs font-bold"
+                            htmlFor="grid-label"
+                          >
+                            {key.toString()}
+                          </label>
+                        </td>
+                        <td className="p-4 border border-blue-gray-50  font-bold">
+                          <input
+                            type="checkbox"
+                            name={value.toString() ? value.toString() : ""}
+                            id={key.toString()}
+                            value={value.toString() ? value.toString() : ""}
+                            checked={StringToBoolean(value)}
+                            onChange={(e) =>
+                              changeInputGrid(key, e.currentTarget.value)
+                            }
+                          />
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="p-2 border border-blue-gray-50">
+                          <label
+                            className=" text-gray-700 text-xs font-bold"
+                            htmlFor="grid-label"
+                          >
+                            {key.toString()}
+                          </label>
+                        </td>
+                        <td className="border border-blue-gray-50">
+                          <input
+                            className=""
+                            type="text"
+                            onChange={(e) =>
+                              changeInputGrid(key, e.currentTarget.value)
+                            }
+                            name={value.toString() ? value.toString() : ""}
+                            id={key.toString()}
+                            value={value.toString() ? value.toString() : ""}
+                          />
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         ) : null}
 
         {/* <Form setJsonData={setJsonData} headerIndex={selectedIndex} Prop={selectedColumn} jsonData={jsonData} /> */}
       </div>
-      <div className="flex flex-col">
-        <div className="w-full px-3">
-          <label
-            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-type"
-          >
-            JSON CODE
-          </label>
-
-          <textarea
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-            value={jsonData ? JSON.stringify(jsonData) : ""}
-            onChange={(e) => {
-              try {
-                let jj =
-                  JSON.parse(e.currentTarget.value)?.Entity !== undefined
-                    ? {
-                        ...JSON.parse(e.currentTarget.value)?.Entity,
-                      }
-                    : JSON.parse(e.currentTarget.value) !== undefined
-                    ? {
-                        ...JSON.parse(e.currentTarget.value),
-                      }
-                    : null;
-
-                if (jj) {
-                
-                  setJsonData(jj);
-                }
-              } catch (ex) {
-                console.log(ex);
-              }
-            }}
-            rows={6}
-          ></textarea>
-        </div>
-
+      <div className="flex flex-col flex-grow">
         <div
           className={"ag-theme-quartz"}
-          style={{ height: 500 }}
+          style={{ height: 200 }}
           onClick={(e) => gridClick()}
         >
-          <h1>{jsonData?.title ? jsonData.title : ""}</h1>
+          <h1 className="block antialiased tracking-normal font-sans text-3xl font-semibold leading-snug !mb-4 text-primary lg:!text-3xl">
+            {jsonData?.title ? jsonData.title : ""}
+          </h1>
           <AgGridReact
             rowData={rowData}
             columnDefs={columnDefs}
@@ -267,6 +400,22 @@ function App() {
             paginationPageSizeSelector={[10, 25, 50]}
             onColumnHeaderClicked={(e) => HeaderClick(e)}
           />
+        </div>
+
+        <div className="w-full px-3 mt-20">
+          <label
+            className="block uppercase tracking-wide text-gray-700 text-xl font-bold mb-2"
+            htmlFor="grid-type"
+          >
+            JSON CODE
+          </label>
+
+          <textarea
+            className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            value={jsonData ? JSON.stringify(jsonData) : ""}
+            onChange={(e) => onChangeTXT(e.currentTarget.value)}
+            rows={15}
+          ></textarea>
         </div>
       </div>
     </div>
