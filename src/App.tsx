@@ -1,22 +1,45 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
-import { InputType, column } from "./FormType";
-import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
-import {
-  ColDef,
-  ModuleRegistry,
-  // RowSelectionOptions,
-} from "@ag-grid-community/core";
+import { InputType, column, ProductType } from "./FormType";
+import { Filter, Rules, FilterTypes } from "./FilterType";
+// import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+// import {
+//   ColDef,
+//   ModuleRegistry,
+//   // RowSelectionOptions,
+// } from "@ag-grid-community/core";
+import { HeaderColumn, Row_data } from "./data";
 import { AgGridReact } from "@ag-grid-community/react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 
-ModuleRegistry.registerModules([ClientSideRowModelModule]);
+import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+import {
+  ColDef,
+  ModuleRegistry,
+  GridReadyEvent,
+  FilterChangedEvent,
+  FilterModifiedEvent,
+  IProvidedFilter,
+  FilterOpenedEvent,
+} from "@ag-grid-community/core";
+import { MenuModule } from "@ag-grid-enterprise/menu";
+import { SetFilterModule } from "@ag-grid-enterprise/set-filter";
+
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  MenuModule,
+  SetFilterModule,
+]);
+
+// ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 function App() {
-  const [jsonData, setJsonData] = useState<InputType>();
+  const [jsonData, setJsonData] = useState<InputType>(HeaderColumn);
   const [pagination, setPagination] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number>();
   const [selectedColumn, setSelectedColumn] = useState<column>();
+
+  const [filterJson, setFilterJson] = useState<Filter>();
 
   const [selectedGrid, setSelectedGrid] = useState<
     | {
@@ -30,7 +53,7 @@ function App() {
     | undefined
   >();
 
-  const [rowData, setRowData] = useState([]);
+  const [rowData, setRowData] = useState<ProductType[]>([]);
 
   const [columnDefs, setColumnDefs] = useState<ColDef[]>();
 
@@ -41,14 +64,29 @@ function App() {
         : false
       : false;
   }, []);
+
+  const onGridReady = useCallback(
+    (params: GridReadyEvent) => {
+      setRowData(Row_data as ProductType[]);
+      // fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
+      //   .then((resp) => resp.json())
+      //   .then((data: IOlympicData[]) => setRowData(data));
+    },
+    [Row_data]
+  );
+
   useEffect(() => {
     if (jsonData) {
       if (jsonData?.columns) {
         jsonData.columns.forEach((col) => (col.headerName = col.title));
+
         jsonData?.columns
           ? setColumnDefs(
               [...jsonData.columns].map((object) => ({
                 ...object,
+                filter: "agTextColumnFilter",
+                floatingFilterComponentParams: {},
+                suppressFloatingFilterButton: true,
               }))
             )
           : setColumnDefs([]);
@@ -258,6 +296,37 @@ function App() {
     },
     [selectedGrid, selectedColumn, selectedIndex]
   );
+
+  const onFilterChanged = useCallback((e: FilterChangedEvent) => {
+    console.log("onFilterChanged", e);
+    console.log(
+      "gridRef.current!.api.getFilterModel() =>",
+      e.api.getFilterModel()
+    );
+    const temp = e.api.getFilterModel();
+    let _tmp: Rules[]=[];
+      Object.entries(temp).map(([key, value]) => {
+      const rule = {
+        field: key,
+        op: value.type,
+        value: value.filter,
+      };
+      _tmp.push(rule);
+    });
+    setFilterJson({
+      filter: {
+        groupOp: "",
+        groups: [],
+        rules: _tmp,
+      },
+      initializefilter: {
+        groupOp: "",
+        groups: [],
+        rules: [],
+      },
+    });
+  }, []);
+
   return (
     <div className="flex flex-row pt-5">
       <div>
@@ -399,10 +468,12 @@ function App() {
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 25, 50]}
             onColumnHeaderClicked={(e) => HeaderClick(e)}
+            onGridReady={onGridReady}
+            onFilterChanged={onFilterChanged}
           />
         </div>
-
-        <div className="w-full px-3 mt-20">
+        <div className="flex">
+        <div className="w-[50%] px-3 mt-20">
           <label
             className="block uppercase tracking-wide text-gray-700 text-xl font-bold mb-2"
             htmlFor="grid-type"
@@ -416,6 +487,22 @@ function App() {
             onChange={(e) => onChangeTXT(e.currentTarget.value)}
             rows={15}
           ></textarea>
+        </div>
+        <div className="w-[50%] px-3 mt-20">
+          <label
+            className="block uppercase tracking-wide text-gray-700 text-xl font-bold mb-2"
+            htmlFor="grid-types"
+          >
+            Filter CODE
+          </label>
+
+          <textarea
+            className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            value={filterJson ? JSON.stringify(filterJson) : ""}
+           
+            rows={15}
+          ></textarea>
+        </div>
         </div>
       </div>
     </div>

@@ -15,9 +15,9 @@ export interface InputType {
   EnableDelete?: boolean;
   EnableExport?: boolean;
   EnableSecurity?: boolean;
-  DefaultPagingIndex?: 1;
+  DefaultPagingIndex?: number;
   sortName?: string;
-  sortOrder?: 2;
+  sortOrder?: number;
   remoteFilter?: boolean;
   EnableFilterBar?: boolean;
   EnableHeaderContextMenu?: boolean;
@@ -30,11 +30,11 @@ export interface InputType {
   ScriptFile?: string;
   idField?: string;
   IsSerialChanges?: boolean;
-  buttons?: [];
-  HelpButtons?: [];
+  // buttons?: [];
+  // HelpButtons?: [];
   columns: column[];
 
-  PagerLookups?: [];
+  // PagerLookups?: [];
   Serial?: {
     condition?: string;
     elseSerial?: string;
@@ -54,22 +54,13 @@ export interface InputType {
   };
   showFooter?: boolean;
 }
-export type columnKey =
-  | "columnID"
-  | "headerName"
-  | "title"
-  | "field"
-  | "ColumnType"
-  | "align"
-  | "sortable"
-  | "IsVisible"
-  | "TrueText"
-  | "FalseText"
-  | "width"
-  | "deltaWidth"
-  | "boxWidth"
-  | "cellClass"
-  | "OrderId";
+export interface ProductType 
+{
+  ProductCode: number,
+  ProductBarcodeNumber: number,
+  ProductName: string,
+}
+
 export interface column {
   columnID?: number;
   headerName?: string;
