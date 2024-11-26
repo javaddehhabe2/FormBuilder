@@ -35,6 +35,7 @@ export const HeaderColumn = {
   columns: [
     {
       columnID: 2,
+      title: "کد محصول",
       headerName: "کد محصول",
       field: "ProductCode",
       ColumnType: 4,
@@ -52,6 +53,7 @@ export const HeaderColumn = {
     },
     {
       columnID: 11,
+      title: "بارکد",
       headerName: "بارکد",
       field: "ProductBarcodeNumber",
       ColumnType: 4,
