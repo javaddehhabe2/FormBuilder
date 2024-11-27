@@ -499,7 +499,7 @@ function App() {
           <textarea
             className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
             value={filterJson ? JSON.stringify(filterJson) : ""}
-           
+            onChange={(e) => console.log(e)}
             rows={15}
           ></textarea>
         </div>
