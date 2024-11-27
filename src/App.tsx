@@ -335,7 +335,7 @@ function App() {
             <tbody>
               {Object.entries(selectedColumn).map(([key, value]) => {
                 return (
-                  <tr className="h-9">
+                  <tr key={key} className="h-9">
                     {["false", "true"].includes(value.toString()) ? (
                       <>
                         <td className="p-4 border border-blue-gray-50">
@@ -393,7 +393,7 @@ function App() {
             <tbody>
               {Object.entries(selectedGrid).map(([key, value]) => {
                 return (
-                  <tr className="h-9">
+                  <tr key={key} className="h-9">
                     {["false", "true"].includes(value.toString()) ? (
                       <>
                         <td className="p-4 border border-blue-gray-50">
